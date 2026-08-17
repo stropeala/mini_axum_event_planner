@@ -1,10 +1,12 @@
+mod authentication;
+mod db;
 mod handlers;
 mod template_structs;
 
 use axum::{Router, routing::get};
 use tokio::net::TcpListener;
 
-use handlers::{homepage, not_found};
+use handlers::home::{homepage, not_found};
 
 pub fn event_planner_router() -> Router {
     Router::new().route("/", get(homepage)).fallback(not_found)
