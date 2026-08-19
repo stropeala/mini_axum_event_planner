@@ -921,6 +921,7 @@ dependencies = [
  "askama_web",
  "axum",
  "dotenvy",
+ "serde",
  "sqlx",
  "tokio",
 ]

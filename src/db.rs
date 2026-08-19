@@ -21,7 +21,7 @@ fn get_schema(schema_name: &str) -> anyhow::Result<String> {
     Ok(content)
 }
 
-async fn sqlite_pool() -> anyhow::Result<SqlitePool> {
+pub async fn sqlite_pool() -> anyhow::Result<SqlitePool> {
     let db_path =
         PathBuf::from(var("DATA_DIR_PATH").context("Failed getting data dir path from env!")?)
             .join(DB_NAME);
@@ -36,7 +36,7 @@ async fn sqlite_pool() -> anyhow::Result<SqlitePool> {
     Ok(pool)
 }
 
-async fn create_table(pool: &SqlitePool, schema_name: &str) -> anyhow::Result<()> {
+pub async fn create_table(pool: &SqlitePool, schema_name: &str) -> anyhow::Result<()> {
     let schema = get_schema(schema_name)?;
     let query = AssertSqlSafe(schema);
 
@@ -47,7 +47,7 @@ async fn create_table(pool: &SqlitePool, schema_name: &str) -> anyhow::Result<()
     Ok(())
 }
 
-async fn is_table(pool: &SqlitePool, table_name: &str) -> anyhow::Result<bool> {
+async fn _is_table(pool: &SqlitePool, table_name: &str) -> anyhow::Result<bool> {
     let query = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?";
     let table: Option<String> = sqlx::query_scalar(query)
         .bind(table_name)
