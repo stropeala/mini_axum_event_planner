@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Event Description{% endblock %}
+{% block content %}
+    <h1>Event Description</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ event.name }}</td>
+                <td>{{ event.date }}</td>
+                <td>{{ event.time }}</td>
+                <td>{{ event.description }}</td>
+                <td>
+                    <a href="/events">
+                        <button>Go Back</button>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock %}

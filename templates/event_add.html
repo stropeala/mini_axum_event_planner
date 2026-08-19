@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Add Event{% endblock %}
+{% block content %}
+    <h1>Add Event</h1>
+    <form method="post" action="/events/add" class="event-form">
+        <label for="name">Name:</label><br />
+        <input type="text" id="name" name="name" required /><br /><br />
+
+        <label for="date">Date:</label><br />
+        <input type="date" id="date" name="date" required /><br /><br />
+
+        <label for="time">Time:</label><br />
+        <input type="time" id="time" name="time" required /><br /><br />
+
+        <label for="description">Description:</label><br />
+        <input type="text" id="description" name="description" required /><br /><br />
+
+        <button type="submit">Add Event</button>
+    </form>
+{% endblock %}
