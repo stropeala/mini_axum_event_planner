@@ -2,50 +2,77 @@ mod authentication;
 mod db;
 mod error;
 mod handlers;
+mod models;
 
+use axum::routing::post;
 use axum::{Router, routing::get};
 use sqlx::SqlitePool;
+use time::Duration;
 use tokio::net::TcpListener;
+use tower_sessions::{Expiry, SessionManagerLayer};
+use tower_sessions_sqlx_store::SqliteStore;
 
-use db::{create_table, sqlite_pool};
-use handlers::{
-    events::{
-        get_event_delete, get_event_planner_add, get_event_planner_description,
-        get_event_planner_index, post_event_delete, post_event_planner_add,
-    },
-    home::{homepage, not_found},
+use db::{create_table, sql_pool};
+use handlers::event::{
+    event_add_get, event_add_post, event_by_id_get, event_delete_get, event_delete_post,
+    event_list_get,
+};
+use handlers::home::{home_get, not_found_get};
+use handlers::user::{
+    user_delete_post, user_login_get, user_login_post, user_profile_get, user_register_get,
+    user_register_post,
 };
 
-const EVENTS: &str = "EVENT_PLANNER_SCHEMA";
-const USER: &str = "USER_SCHEMA";
+use crate::handlers::user::user_logout_post;
 
-pub async fn event_planner_pool() -> anyhow::Result<SqlitePool> {
-    let pool = sqlite_pool().await?;
-    create_table(&pool, EVENTS).await?;
-    create_table(&pool, USER).await?;
+const EVENT_SCHEMA: &str = "EVENT_PLANNER_SCHEMA";
+const USER_SCHEMA: &str = "USER_SCHEMA";
+
+pub async fn app_sql_pool() -> anyhow::Result<SqlitePool> {
+    let pool = sql_pool().await?;
+    create_table(&pool, USER_SCHEMA).await?;
+    create_table(&pool, EVENT_SCHEMA).await?;
+
     Ok(pool)
 }
 
-pub fn events_router() -> Router<SqlitePool> {
+pub fn event_router() -> Router<SqlitePool> {
     Router::new()
-        .route("/", get(get_event_planner_index))
-        .route(
-            "/add",
-            get(get_event_planner_add).post(post_event_planner_add),
-        )
-        .route("/delete", get(get_event_delete).post(post_event_delete))
-        .route("/{id}", get(get_event_planner_description))
+        .route("/", get(event_list_get))
+        .route("/add", get(event_add_get).post(event_add_post))
+        .route("/delete", get(event_delete_get).post(event_delete_post))
+        .route("/{id}", get(event_by_id_get))
 }
 
-pub fn event_planner_router(pool: SqlitePool) -> Router {
+pub fn user_router() -> Router<SqlitePool> {
     Router::new()
-        .route("/", get(homepage))
-        .nest("/events", events_router())
-        .fallback(not_found)
+        .route("/register", get(user_register_get).post(user_register_post))
+        .route("/login", get(user_login_get).post(user_login_post))
+        .route("/profile", get(user_profile_get))
+        .route("/delete", post(user_delete_post))
+        .route("/logout", post(user_logout_post))
+}
+
+pub async fn app_router(pool: SqlitePool) -> Router {
+    let session_store = SqliteStore::new(pool.clone());
+    session_store
+        .migrate()
+        .await
+        .expect("session migration failed");
+
+    let session_layer = SessionManagerLayer::new(session_store)
+        .with_expiry(Expiry::OnInactivity(Duration::days(7)));
+
+    Router::new()
+        .route("/", get(home_get))
+        .merge(user_router())
+        .nest("/events", event_router())
+        .fallback(not_found_get)
+        .layer(session_layer)
         .with_state(pool)
 }
 
-pub async fn event_planner_listener() -> TcpListener {
+pub async fn app_listener() -> TcpListener {
     println!("Listening on http://127.0.0.1:3000");
 
     TcpListener::bind("127.0.0.1:3000")
