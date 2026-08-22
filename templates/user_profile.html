@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Edit Profile</h1>
+
+    <form method="post" action="/profile" class="profile-form">
+        <label for="username">Username</label><br>
+        <input type="text" name="username" id="username" value="{{ user.username }}" required><br><br>
+
+        <label for="email">Email</label><br>
+        <input type="email" name="email" id="email" value="{{ user.email }}" required><br><br>
+
+        <label for="password">New Password</label><br>
+        <input type="password" name="password" id="password"><br><br>
+
+        <label for="confirm_password">Confirm New Password</label><br>
+        <input type="password" name="confirm_password" id="confirm_password"><br><br>
+
+        <button type="submit">Save Profile</button><br>
+    </form>
+
+    <form method="post" action="/delete" class="delete-account-form"
+            onsubmit="return confirm('Delete your account permanently? This cannot be undone.');">
+            <button type="submit">Delete Account</button>
+    </form>
+{% endblock %}
