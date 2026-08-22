@@ -12,7 +12,7 @@ use crate::models::event::{Event, EventDelete, EventNew};
 // Display all events
 
 #[derive(Template, WebTemplate)]
-#[template(path = "event_planner/event_list.html")]
+#[template(path = "event_list.html")]
 pub struct EventListPage {
     pub events: Vec<Event>,
 }
@@ -29,7 +29,7 @@ pub async fn event_list_get(
 // Add new event
 
 #[derive(Template, WebTemplate)]
-#[template(path = "event_planner/event_add.html")]
+#[template(path = "event_add.html")]
 pub struct EventAddPage {}
 
 pub async fn event_add_get(CurrentUser(_user_id): CurrentUser) -> EventAddPage {
@@ -49,7 +49,7 @@ pub async fn event_add_post(
 // Show event description
 
 #[derive(Template, WebTemplate)]
-#[template(path = "event_planner/event_description.html")]
+#[template(path = "event_description.html")]
 pub struct EventDescriptionPage {
     pub event: Event,
 }
@@ -68,7 +68,7 @@ pub async fn event_by_id_get(
 // Delete event
 
 #[derive(Template, WebTemplate)]
-#[template(path = "event_planner/event_delete.html")]
+#[template(path = "event_delete.html")]
 pub struct EventDeletePage {
     pub events: Vec<Event>,
 }

@@ -14,7 +14,7 @@ use crate::models::user::{User, UserLogin, UserNew};
 // Register new user
 
 #[derive(Template, WebTemplate)]
-#[template(path = "user/user_register.html")]
+#[template(path = "user_register.html")]
 pub struct UserRegisterPage {}
 
 pub async fn user_register_get() -> UserRegisterPage {
@@ -33,7 +33,7 @@ pub async fn user_register_post(
 // Login
 
 #[derive(Template, WebTemplate)]
-#[template(path = "user/user_login.html")]
+#[template(path = "user_login.html")]
 pub struct UserLoginPage {}
 
 pub async fn user_login_get() -> UserLoginPage {
@@ -72,7 +72,7 @@ pub async fn user_logout_post(session: Session, CurrentUser(_user_id): CurrentUs
 // User profile
 
 #[derive(Template, WebTemplate)]
-#[template(path = "user/user_profile.html")]
+#[template(path = "user_profile.html")]
 pub struct UserProfilePage {
     pub user: User,
 }
